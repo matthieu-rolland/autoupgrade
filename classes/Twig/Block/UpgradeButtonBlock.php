@@ -132,11 +132,13 @@ class UpgradeButtonBlock
 
         if (!in_array($channel, ['archive', 'directory']) && !empty($this->upgrader->version_num)) {
             $latestVersion = "{$this->upgrader->version_name} - ({$this->upgrader->version_num})";
-            $phpLastestVersionCompatible = self::PHP_PS_VERSIONS[substr($latestVersion, 0, 5)];
-            $phpIsCompatible = in_array(substr(PHP_VERSION,0,3), $phpLastestVersionCompatible);
+            $phpChosenVersionCompatible = self::PHP_PS_VERSIONS[substr($this->upgrader->version_num, 0, 5)];
+            $phpIsCompatible = in_array(substr(PHP_VERSION,0,3), $phpChosenVersionCompatible);
+            $psVersionChosen = $this->upgrader->version_num;
         } else {
             $latestVersion = $translator->trans('N/A', [], 'Admin.Global');
             $phpIsCompatible = true;
+            $psVersionChosen = $translator->trans('N/A', array(), 'Admin.Global');
         }
 
         $showUpgradeButton = false;
@@ -197,7 +199,8 @@ class UpgradeButtonBlock
             'directoryVersionNumber' => $this->config->get('directory.version_num'),
             'manualMode' => $this->manualMode,
             'phpVersion' => PHP_VERSION,
-            'psChosenVersionCompatible' =>  $phpLastestVersionCompatible,
+            'psChosenVersionCompatible' =>  $phpChosenVersionCompatible,
+            'psVersionChosen' => $psVersionChosen,
         ];
 
         return $this->twig->render('@ModuleAutoUpgrade/block/upgradeButtonBlock.twig', $data);
